@@ -64,6 +64,16 @@ const user = useSelector((state) => state?.user?.user);
                   QR Codes
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/intro"
+                  className={({ isActive }) =>
+                    isActive ? "bg-black text-white" : ""
+                  }
+                >
+                  About
+                </NavLink>
+              </li>
             </ul>
           </div>
           <Link className="btn btn-ghost text-xl logo-font" to="/">
@@ -100,6 +110,16 @@ const user = useSelector((state) => state?.user?.user);
                 }
               >
                 QR Codes
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/intro"
+                className={({ isActive }) =>
+                  isActive ? "bg-black text-white" : ""
+                }
+              >
+                About
               </NavLink>
             </li>
           </ul>

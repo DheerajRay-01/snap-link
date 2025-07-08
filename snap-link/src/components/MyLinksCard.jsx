@@ -28,6 +28,12 @@ function MyLinksCard({data}) {
       toast.success('copied')
     }
 
+
+    const handleAnalytics = () => {
+      navigate(`/analytics/${data._id}`)
+      // console.log(data._id);
+    }
+
     // console.log(data);
     
 
@@ -143,16 +149,24 @@ const handleShare = () => {
       </div>
 
       {/* CTA Button (Responsive Text) */}
-      <button className="w-full bg-amber-200 text-black text-sm py-2 rounded-md hover:bg-amber-300 transition" onClick={()=>setIsManageOpen(pre => !pre)}>
-        <span className="block sm:hidden">Manage</span>
-        <span className="hidden sm:block">Manage Link & Analytics</span>  
-      </button>
-      <button className='btn-error btn' onClick={()=>navigate("/analytics")}>Analytics</button>
-      {isManageOpen&& <ManageLink linkData={data} onClose={()=>setIsManageOpen(pre => !pre)}/>}
+  <div className="flex flex-col sm:flex-row gap-3">
+  <button
+    className="flex-1 bg-amber-200 text-black text-sm py-2 rounded-md hover:bg-amber-300 cursor-pointer"
+    onClick={() => setIsManageOpen((prev) => !prev)}
+  >
+    Manage
+  </button>
+  <button
+    className="flex-1 bg-blue-400 text-black text-sm py-2 rounded-md hover:bg-blue-500 cursor-pointer"
+    onClick={handleAnalytics}
+  >
+    Analytics
+  </button>
+</div>
 
-{/* <button className="btn btn-primary" onClick={()=>document.getElementById('my_modal_5').showModal()}>Manage</button>
-<dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-</dialog> */}
+        
+
+
 
 
       <Toaster

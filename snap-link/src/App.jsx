@@ -83,7 +83,7 @@ let isAuthenticated = !!user
       
       {/* Public Pages (blocked if logged in) */}
       <Route element={<PublicRoutes isAuthenticated={isAuthenticated} />}>
-        <Route path="intro" element={<LandingPage />} />
+
         <Route path="login" element={<LoginPage />} />
       </Route>
 
@@ -92,7 +92,7 @@ let isAuthenticated = !!user
         <Route path="my-links" element={<MyLinksPage />} />
         <Route path="qr-codes" element={<MyQrPage />} />
         <Route path="logout" element={<LogOutPage />} />
-        <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="analytics/:id" element={<AnalyticsPage />} />
       </Route>
 
       {/* Common Pages (anyone can access) */}
@@ -102,6 +102,7 @@ let isAuthenticated = !!user
     </Route>
       <Route path=":id" element={<RedirectURL />} />
       <Route path="protected/:id" element={<ProjectedUrlPage />} />
+              <Route path="intro" element={<LandingPage />} />
   </Routes>
 </BrowserRouter>
 

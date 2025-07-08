@@ -13,6 +13,7 @@ import {
 } from "../controller/link.controller.js";
 import { authMiddleWare } from "../middleware/auth.middleware.js";
 import { clickMiddleware } from "../middleware/click.middleware.js";
+import { getAllClicks } from "../controller/click.controller.js";
 const router = Router()
 
 // router.route("/create",createShortLink)
@@ -30,6 +31,9 @@ router.route("/update-status").patch(authMiddleWare,toggleActive)
 router.route("/my-links").get(authMiddleWare,fetchMyLinks)
 router.route("/update-details/:slug").post(authMiddleWare,updateLinkDetails)
 router.route("/delete/:slug").delete(authMiddleWare,deleteLink)
+
+
+router.route("/analytics/:id").get(authMiddleWare,getAllClicks)
 
 
 

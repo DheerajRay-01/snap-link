@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getClickAnalytics } from "../../../../server/utils/dummyClicks";
+import { FaLink } from "react-icons/fa6";
+import { LuCopy } from "react-icons/lu";
 import StateCard from "../StateCard";
 import PieOSChart from "../charts/PieOSChart";
 import BrowserDonutChart from "../charts/BrowserDonutChart";
@@ -7,23 +9,81 @@ import ClickLineChhart from "../charts/ClickLineChhart";
 import CityBarChart from "../charts/CityBarChart";
 import CountryBarChart from "../charts/CountryBarChart";
 import { Toaster,toast } from 'react-hot-toast';
+import { useParams } from "react-router";
+import axiosInstance from "../../utils/axios";
 
 
 function Analytics() {
-  const data = getClickAnalytics();
+  // const data = getClickAnalytics();
+    const [data , setData] = useState([])
+    const [error , setError] = useState(null)
+    const [loading , setLoading] = useState(false)
+    const params = useParams()
+    const id = params.id 
+
+    console.log("ID",id);
+
+
+useEffect(() => {
+  const fetchAnalyticsData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await axiosInstance.get(`/links/analytics/${id}`);
+      console.log(res.data.data.analyticsData);
+
+      const analytics = res?.data?.data?.analyticsData;
+
+      setData({
+        cityData: analytics.cityData || [],
+        countryData: analytics.countryData || [],
+        totalClicks: analytics.totalClicks || 0,
+        totalUniqueUsers: analytics.totalUniqueUsers || 0,
+        osData: analytics.osData || [],
+        browsers: analytics.browsers || [],
+        dateData: analytics.dateData || []
+      });
+    } catch (err) {
+      console.error("Error fetching analytics:", err);
+      setError(err?.response?.data?.message || "Failed to load analytics data.");
+      toast.error("Failed to load analytics data. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAnalyticsData();
+}, [id]);
+
+    
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!")
   };
 
+
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg text-gray-700">Loading analytics...</p>
+      </div>
+    );
+  }
+
+   if (error || !data || Object.keys(data).length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen text-red-600">
+        <p className="text-lg font-semibold">🚨 {error || "Failed to load analytics data"}</p>
+       Something Went wrong
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F0CD] text-gray-800">
-      {/* Page Title */}
-      {/* <div className="px-6 py-8 border-b bg-[#3674B5] text-white shadow sticky top-0 z-10">
-        <h1 className="text-3xl font-bold tracking-tight">📊 Analytics Dashboard</h1>
-      </div> */}
-
+ 
       <div className="w-full flex flex-col">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row flex-wrap justify-between px-6 py-6 gap-6 bg-[#578FCA] text-white rounded-lg mx-4 my-4 shadow-lg">
@@ -73,7 +133,7 @@ function Analytics() {
             totalCity={data.cityData.length}
             totalClick={data.totalClicks}
             totalCountry={data.countryData.length}
-            totalUniqueUser={data.uniqueUsers}
+            totalUniqueUser={data.totalUniqueUsers}
           />
         </header>
 
@@ -118,6 +178,7 @@ function Analytics() {
         reverseOrder={false}
       />
     </div>
+    // <></>
   );
 }
 
