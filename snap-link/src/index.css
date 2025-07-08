@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+
+.logo-font {
+  font-family: 'Caveat Variable', cursive;
+}
