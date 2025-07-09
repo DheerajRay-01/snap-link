@@ -40,10 +40,10 @@ function MyLinks() {
     <div className="hero bg-base-200 min-h-screen w-full">
       <div className="hero-content min-h-screen w-full items-start pt-7">
         <div className="max-w-xl w-full">
-          <ul className="list rounded-box items-center gap-5 overflow-y-scroll h-screen">
+          <ul className="list rounded-box items-center gap-5 overflow-y-scroll h-screen ">
             {links.length > 0 ? (
               links.map((e) => (
-                <li key={e._id} className="w-[80%] p-4 rounded-xl shadow-md border flex flex-col gap-2">
+                <li key={e._id} className=" p-4 rounded-xl shadow-md border flex  flex-col gap-2 w-[90%]">
                   <MyLinksCard data={e} />
                 </li>
               ))

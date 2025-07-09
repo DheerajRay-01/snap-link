@@ -5,6 +5,7 @@ import ApiError from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
+import jwt from 'jsonwebtoken'
 
 const googleAuth = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -34,8 +35,8 @@ const googleAuth = asyncHandler(async (req, res) => {
   return res
     .cookie("accessToken", accessToken, {
       ...cookieOptions,
-      // maxAge: 15 * 60 * 1000, // 15 min
-       maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+      maxAge: 1 * 60 * 1000, // 15 min
+      //  maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
       
     })
     .cookie("refreshToken", refreshToken, {
@@ -84,4 +85,61 @@ const failure = asyncHandler(async(req, res)=>{
 })
 
 
-export { googleAuth ,failure,logOut,getCurrentUser};
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  // console.log(refreshToken);
+  // console.log("jiii");
+  
+  
+
+  if (!refreshToken) {
+    throw new ApiError(400, "Refresh Token Not Found");
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  } catch (err) {
+    throw new ApiError(401, "Invalid or Expired Refresh Token");
+  }
+
+  const user = await User.findById(decoded._id);
+
+
+  if (!user) {
+    throw new ApiError(404, "User Not Found While Refreshing Access Token");
+  }
+// console.log(user);
+
+
+  if (user.refreshToken !== refreshToken) {
+  throw new ApiError(403, "Refresh token does not match");
+}
+
+
+
+const accessToken =  generateAccessToken({_id:user._id, user:user.fullName, email:user.email});
+console.log("jji");
+
+  // console.log(accessToken);
+  
+
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // true for HTTPS
+    sameSite: "Lax",
+  };
+
+  return res
+    .cookie("accessToken", accessToken, {
+      ...cookieOptions,
+      maxAge: 1 * 60 * 1000, // 5 min
+    })
+    .status(200)
+    .json(new ApiResponse(200, {}, "Access Token Generated"));
+});
+
+
+
+export { googleAuth ,failure,logOut,getCurrentUser ,refreshAccessToken};

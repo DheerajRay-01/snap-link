@@ -60,10 +60,13 @@ function Home() {
     toast.error("Login Required For Customization")
   };
 
+
+
+
   return (
     <div className="hero bg-base-200 min-h-screen">
       <div className="hero-content text-center min-h-screen items-start pt-3">
-        <div className="max-w-lg">
+        <div className="max-w-lg mt-6">
           <h1 className="text-5xl font-bold">Welcome to SnapLink</h1>
             <p className="py-6 text-base-content">
               Turn any lengthy URL into a short, smart link. Add click limits,

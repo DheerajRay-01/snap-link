@@ -7,6 +7,7 @@ import { updateLink } from "../utils/redux/myLinksSlice";
 import copy from "copy-to-clipboard";
 import { FaLink } from "react-icons/fa6";
 import { LuCopy } from "react-icons/lu";
+// import { hashPassword } from "../../../server/utils/link_utils";
 
 function ManageLink({ linkData, onClose }) {
   console.log(linkData);
@@ -14,12 +15,15 @@ function ManageLink({ linkData, onClose }) {
   const [slug, setSlug] = useState(linkData.slug);
   const [title, setTitle] = useState(linkData.title);
   const [isProtected, setIsProtected] = useState(linkData.isProtected);
-  const [password, setPassword] = useState(linkData.password);
+  const [password, setPassword] = useState(null);
+  const [HasPassword, setHasPassword] = useState(!!linkData.password);  
   const [clickLimit, setClickLimit] = useState(linkData.clickLimit);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch()
 
  const handleUpdate = async () => {
+  setLoading(true)
   try {
     // Prepare payload
     const data = { slug, title, password, isProtected, clickLimit };
@@ -28,10 +32,10 @@ function ManageLink({ linkData, onClose }) {
       toast.error("Title cannot be empty");
       return;
     }
-    if (isProtected && (!password || password.trim() === "")) {
-      toast.error("Please provide a password for protected links");
-      return;
-    }
+      // if (isProtected && (!password || password.trim() === "")) {
+      //   toast.error("Please provide a password for protected links");
+      //   return;
+      // }
 
     // Call API
     const updateRes = await axiosInstance.post(
@@ -51,6 +55,8 @@ function ManageLink({ linkData, onClose }) {
       error.response?.data?.message ||
       (error.code === "ERR_NETWORK" ? "Network error. Please check your connection." : "Update failed");
     toast.error(message);
+  }finally{
+    setLoading(false)
   }
 };
 
@@ -82,7 +88,7 @@ const handleCopy =()=> {
           </button>
         </div>
 
-        <p className="text-black flex w-full items-center gap-3 justify-center" ><strong>SnapLink:</strong> {linkData.shortUrl}  <LuCopy size={20} className="inline" color="black" onClick={handleCopy}/></p>
+        <p className="text-black flex w-full items-center gap-3 justify-center" ><strong>SnapLink:</strong> snap-link/{linkData.slug}  <LuCopy size={25} className="inline cursor-pointer" color="black" onClick={handleCopy}/></p>
           
         {/* Inputs */}
         <div className="space-y-3  flex flex-col justify-center items-center">
@@ -156,7 +162,8 @@ const handleCopy =()=> {
 
               <input
                 type="password"
-                placeholder={password ? "********" : "Set Password"}
+                // value={password}
+                placeholder={HasPassword ? "Change Password" : "Set Password"}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </label>
@@ -169,9 +176,19 @@ const handleCopy =()=> {
           <button onClick={onClose} className="btn btn-sm btn-warning">
             Cancel
           </button>
-          <button className="btn btn-sm btn-primary" onClick={handleUpdate}>
-            Save Details
-          </button>
+          {
+            loading ? (
+              <button className="btn btn-sm btn-primary">
+                <span className="loading loading-dots loading-lg"></span>
+              </button>
+          ) 
+            : (
+              <button className="btn btn-sm btn-primary" onClick={handleUpdate}>
+                 Save Details
+              </button>
+            )
+          }
+        
         </div>
       </div>
             <Toaster

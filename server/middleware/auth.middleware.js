@@ -5,19 +5,19 @@ import jwt from 'jsonwebtoken'
 export const authMiddleWare = asyncHandler(async(req, res, next)=>{
     const token  = req.cookies.accessToken
     if(!token){
-        throw new ApiError(401,"Access denied. Login required.")
+        throw new ApiError(401,"TOKEN_EXPIRED")
     }
     const decodeToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
 
     if(!decodeToken){
-        throw new ApiError(401,"Unauthorize or Expired Token")
+        throw new ApiError(401,"TOKEN_EXPIRED")
     }
 
-    const user = await User.findById(decodeToken._id).select("-accessToken -refreshToken")
+    const user = await User.findById(decodeToken._id).select("-refreshToken")
     // console.log(user);
     
     if(!user){
-        throw new ApiError(401,"Failed to Get User from Token")
+        throw new ApiError(401,"TOKEN_EXPIRED")
     }
   
     

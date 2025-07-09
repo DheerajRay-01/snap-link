@@ -15,6 +15,9 @@ const createShortLink = asyncHandler(async (req, res) => {
   const clickLimit = req.body?.clickLimit || 0;
   const title = req.body?.title || "Untitled"
 
+  console.log(password);
+  
+
   //  Validate URL
   if (!url || !(url.startsWith("http://") || url.startsWith("https://"))) {
     throw new ApiError(400, "Please provide a valid URL starting with http:// or https://");
@@ -266,6 +269,8 @@ const updateLinkDetails = asyncHandler(async (req, res) => {
     const slug = req.params.slug;
 
     const newSlug = req.body.slug;
+    console.log(req.body);
+    
 
     // ✅ Validate required slug param
     if (!slug || typeof slug !== "string") {
@@ -278,6 +283,9 @@ const updateLinkDetails = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Link not found");
     }
 
+
+    console.log(url);
+    
     const updateFields = {};
 
     // ✅ Update slug and shortUrl if newSlug provided
@@ -311,12 +319,19 @@ const updateLinkDetails = asyncHandler(async (req, res) => {
     // ✅ Handle password protection
     if (isProtected === true) {
       if (!password || password.trim() === "") {
-        throw new ApiError(400, "Password is required when protection is enabled");
+        // throw new ApiError(400, "Password is required when protection is enabled");
+        if (url.password) {
+          updateFields.password = url.password;
+          updateFields.isProtected = true;
+        } else {
+          updateFields.isProtected = false;
+        }
+      } else {
+        updateFields.password = await bcrypt.hash(password, 10);
+        updateFields.isProtected = true;
       }
-      updateFields.password = await bcrypt.hash(password, 10);
-      updateFields.isProtected = true;
     } else if (isProtected === false) {
-      updateFields.$unset = { password: "" }; // Remove password field
+      updateFields.password = null // Remove password field
       updateFields.isProtected = false;
     }
 
@@ -332,6 +347,8 @@ const updateLinkDetails = asyncHandler(async (req, res) => {
     if (!updatedURL) {
       throw new ApiError(500, "Failed to update link details");
     }
+    console.log(updatedURL);
+    
 
     return res
       .status(200)
@@ -376,6 +393,30 @@ const deleteLink = asyncHandler(async(req,res)=>{
   .json(new ApiResponse(200,{delete:"Ok"},"Delete Successfully" ))
 
 })
+
+// const changePassword = asyncHandler(async(req,res)=>{
+//   const {password,slug} = req.body
+
+//    if (!slug) {
+//     throw new ApiError(404, "Slug not found");
+//   }
+//    if (!password) {
+//     throw new ApiError(404, "password required");
+//   }
+
+//   const exist = await Link.findOne({slug})
+//     if (!exist) {
+//     throw new ApiError(404, "Slug not found");
+//   }
+
+
+
+
+ 
+//   return res.status(200)
+//   .json(new ApiResponse(200,{delete:"Ok"},"Delete Successfully" ))
+
+// })
 
 
 const fetchMyLinks = asyncHandler(async (req, res) => {

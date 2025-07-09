@@ -50,7 +50,7 @@ function MyQr() {
   return (
   <div className="hero bg-base-200 min-h-screen">
   <div className="hero-content flex flex-col items-center w-full ">
-    <div className=" w-fit shadow-xl p-4 rounded-lg min-w-[400px]">
+    <div className=" w-fit shadow-xl p-4 rounded-lg">
       {/* QR Grid */}
       <div className="h-[75vh] overflow-y-auto grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-4">
         {qrs && qrs.length > 0 ? (

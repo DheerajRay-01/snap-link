@@ -66,7 +66,7 @@ const user = useSelector((state) => state?.user?.user);
               </li>
               <li>
                 <NavLink
-                  to="/intro"
+                  to="/about"
                   className={({ isActive }) =>
                     isActive ? "bg-black text-white" : ""
                   }
@@ -114,7 +114,7 @@ const user = useSelector((state) => state?.user?.user);
             </li>
             <li>
               <NavLink
-                to="/intro"
+                to="/about"
                 className={({ isActive }) =>
                   isActive ? "bg-black text-white" : ""
                 }

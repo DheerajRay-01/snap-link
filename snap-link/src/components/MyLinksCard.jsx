@@ -85,14 +85,14 @@ const handleShare = () => {
 
   return (
     
-      <>
+      <div className=''>
       {/* Title & URL */}
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex items-start justify-between ">
+        <div className=''>
           <div className="font-semibold text-base">{isProtected &&  <MdLockOutline className='inline mr-2' size={17} color='red'/>}{title}</div>
-          <div className="text-xs font-medium text-gray-500 break-all">{shortUrl}</div>
+          <div className="text-xs font-medium text-gray-500 break-all ">snap-link/{slug}</div>
         </div>
-        <div className="flex gap-1">
+        <div className="flex flex-row">
     
           <button className="btn btn-circle btn-ghost" title="Copy" onClick={copyUrl}>
             <LuCopy size={18} />
@@ -104,9 +104,13 @@ const handleShare = () => {
       </div>
 
       {/* Compact Info (Mobile) */}
-      <div className="text-xs text-gray-600 flex justify-between items-center sm:hidden">
-        <span>Clicks: {clicks}</span>
-            <span>📅 {date}</span>
+      <div className="text-xs text-gray-600 flex justify-between items-center sm:hidden py-2">
+        <div className='flex font-bold flex-col'>
+        <span>Clicks:{clicks}</span>
+            <span>{date}  </span>
+            </div>
+
+            <div className='flex gap-2 justify-center items-center'>
            <span className="text-green-600 font-semibold">Active</span>
    <input
   type="checkbox"
@@ -118,6 +122,7 @@ const handleShare = () => {
     checked:border-green-500 checked:bg-green-500 
     transition duration-200"
 />
+</div>
 <button className='btn btn-ghost btn-circle' onClick={handleDelete}>
   <MdDeleteForever size={25} color='white'/>
 </button>
@@ -149,7 +154,7 @@ const handleShare = () => {
       </div>
 
       {/* CTA Button (Responsive Text) */}
-  <div className="flex flex-col sm:flex-row gap-3">
+  <div className="flex gap-3">
   <button
     className="flex-1 bg-amber-200 text-black text-sm py-2 rounded-md hover:bg-amber-300 cursor-pointer"
     onClick={() => setIsManageOpen((prev) => !prev)}
@@ -164,6 +169,8 @@ const handleShare = () => {
   </button>
 </div>
 
+{isManageOpen && <ManageLink linkData={data} onClose={() => setIsManageOpen((prev) => !prev)}/>}
+
         
 
 
@@ -173,7 +180,7 @@ const handleShare = () => {
   position="bottom-right"
   reverseOrder={false}
 />
-    </>
+    </div >
   );
 }
 
