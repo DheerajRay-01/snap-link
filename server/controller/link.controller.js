@@ -314,7 +314,7 @@ const updateLinkDetails = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Click limit must be a positive number");
       }
       updateFields.clickLimit = limit;
-    }
+    } 
 
     // ✅ Handle password protection
     if (isProtected === true) {

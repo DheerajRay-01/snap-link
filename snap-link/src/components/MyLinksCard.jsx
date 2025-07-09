@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 import { deleteLink } from '../utils/redux/myLinksSlice';
 import ManageLink from './ManageLink';
 import { useNavigate } from 'react-router';
+import { TbQrcode } from "react-icons/tb";
+import QRPopup from './QRPopup';
 
 function MyLinksCard({data}) {
 
@@ -20,7 +22,10 @@ function MyLinksCard({data}) {
   const [active ,setActive] = useState(data?.active)
   const date = new Date(data.createdAt).toLocaleDateString('en-GB')
   const [loading, setLoading] = useState(false);
+  const [qrLoading, setQrLoading] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false)
+  const [qrUrl, setQrUrl] = useState(data.qrUrl)
+  const [qrOpen, setQrOpen] = useState(false)
   const dispatch = useDispatch()
 
     const copyUrl = () =>{
@@ -34,7 +39,49 @@ function MyLinksCard({data}) {
       // console.log(data._id);
     }
 
+ const generateQR = async () => {
+  if (qrLoading) return; // Prevent double clicks
+  setQrLoading(true);
+
+  try {
+    const res = await axiosInstance.post("/links/generate-qr", { slug });
+    const qr = res?.data?.data?.qrUrl;
+    console.log(qr);
+    
+
+    if (qr) {
+      
+      toast.success("✅ QR Code Generated");
+      setQrUrl(qr);
+      setQrOpen(true);
+    } else {
+      toast.error("Failed to generate QR code. Try again.");
+    }
+  } catch (error) {
+    console.error("QR generation failed:", error);
+
+    if (error.response?.data?.message) {
+      toast.error(error.response.data.message); // API error message
+    } else if (error.request) {
+      toast.error("Network error. Check your internet connection.");
+    } else {
+      toast.error("Something went wrong. Please try again.");
+    }
+  } finally {
+    setQrLoading(false);
+  }
+};
+
     // console.log(data);
+
+const handleQr = async ()=>{
+  if(qrUrl){
+    setQrOpen((pre)=> !pre)
+  }else{
+   await generateQR()
+   setQrOpen(true)
+  }
+}
     
 
 
@@ -123,9 +170,22 @@ const handleShare = () => {
     transition duration-200"
 />
 </div>
+{
+  qrLoading ? (
+       <button className='btn btn-ghost btn-circle' onClick={handleQr}>
+  <span className="loading loading-ring loading-sm"></span>
+</button>
+  ) : (
+    <button className='btn btn-ghost btn-circle' onClick={handleQr}>
+  <TbQrcode size={25} color='white'/>
+</button>
+  )
+}
+
 <button className='btn btn-ghost btn-circle' onClick={handleDelete}>
   <MdDeleteForever size={25} color='white'/>
 </button>
+
 
 
       </div>
@@ -146,9 +206,22 @@ const handleShare = () => {
     checked:border-green-500 checked:bg-green-500 
     transition duration-200"
 />
+{
+  qrLoading ? (
+       <button className='btn btn-ghost btn-circle' onClick={handleQr}>
+  <span className="loading loading-ring loading-sm"></span>
+</button>
+  ) : (
+    <button className='btn btn-ghost btn-circle' onClick={handleQr}>
+  <TbQrcode size={25} color='white'/>
+</button>
+  )
+}
 <button className='btn btn-ghost btn-circle' onClick={handleDelete}>
   <MdDeleteForever size={25} color='white'/>
 </button>
+
+
 
         </div>
       </div>
@@ -174,7 +247,7 @@ const handleShare = () => {
         
 
 
-
+{qrOpen && <QRPopup data={data} qrUrl={qrUrl} onClose={()=> setQrOpen(false)} />}
 
       <Toaster
   position="bottom-right"

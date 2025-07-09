@@ -60,7 +60,7 @@ const logOut = asyncHandler(async (req, res) => {
     .clearCookie("accessToken")
     .clearCookie("refreshToken")
     .status(200)
-    .redirect(process.env.CORS_ORIGIN); 
+    .json(new ApiResponse(200,{},"logOut Success"))
 });
 
 
